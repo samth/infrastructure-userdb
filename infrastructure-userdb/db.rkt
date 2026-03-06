@@ -80,7 +80,12 @@
                          (lambda (password-hash)
                            (get 'properties
                                 (lambda (properties)
-                                  (user-info email password-hash (make-immutable-hash properties)))
+                                  ;; Properties are stored as (key value) two-element lists.
+                                  ;; Convert to (key . value) pairs for make-immutable-hash.
+                                  (user-info email password-hash
+                                             (make-immutable-hash
+                                              (for/list ([p (in-list properties)])
+                                                (cons (car p) (cadr p))))))
                                 (lambda _missing-key-error-details
                                   (user-info email password-hash (hash))))))))))))
 
